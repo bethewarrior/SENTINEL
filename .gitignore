@@ -1,0 +1,21 @@
+# ── Local-only assets (not part of the published deliverable) ──────────────
+presentation.html
+demo.ps1
+DEMO.md
+
+# ── Generated / compiled output ───────────────────────────────────────────
+*.js
+*.js.map
+dist/
+build/
+
+# ── Dependencies & tooling (this project ships with none) ─────────────────
+node_modules/
+package-lock.json
+
+# ── Editor / OS noise ─────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
