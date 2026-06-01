@@ -23,7 +23,15 @@ A **system health sentinel** written in **TypeScript** that monitors your machin
 ![Types](https://img.shields.io/badge/tsc_--strict-clean-2A6DB2?style=flat-square)
 ![Hackathon](https://img.shields.io/badge/Code_Olympics-2026-EF9F27?style=flat-square)
 
-**[Features](#-features) • [How It Works](#-how-it-works) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Architecture](#️-architecture) • [Verification](#-verification)**
+**[▶ Demo Video](https://youtu.be/oN0a3Z-gmqE) • [Features](#-features) • [How It Works](#-how-it-works) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Architecture](#️-architecture) • [Verification](#-verification)**
+
+<br/>
+
+<a href="https://youtu.be/oN0a3Z-gmqE">
+  <img src="https://img.youtube.com/vi/oN0a3Z-gmqE/maxresdefault.jpg" alt="▶ Watch the SENTINEL demo" width="70%" />
+</a>
+
+<sub>▶ <b><a href="https://youtu.be/oN0a3Z-gmqE">Watch the 3-minute demo on YouTube</a></b></sub>
 
 </div>
 
