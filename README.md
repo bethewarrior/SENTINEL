@@ -4,9 +4,9 @@
 
 # 🛰️ SENTINEL
 
-### *A real-time system monitor that talks to the runtime directly — zero imports, zero dependencies, zero build tools.*
+### *A real-time system health monitor that talks to the runtime directly — zero imports, zero dependencies, zero build tools.*
 
-A **system health sentinel** in **TypeScript** that monitors your machine, runs health checks, automates incident response, and cleans up after itself — written with **no `import`, no libraries, and no build step**. Built for the **Code Olympics 2026** hackathon.
+A **system health sentinel** written in **TypeScript** that monitors your machine, runs health checks, automates incident response, and manages its own footprint — built with **no `import`, no libraries, and no build step**. Created for the **Code Olympics 2026** hackathon.
 
 <br/>
 
@@ -21,43 +21,44 @@ A **system health sentinel** in **TypeScript** that monitors your machine, runs 
 ![Lines](https://img.shields.io/badge/lines-605_/_650-1D9E75?style=flat-square)
 ![Tests](https://img.shields.io/badge/selftest-17_passing-1D9E75?style=flat-square)
 ![Types](https://img.shields.io/badge/tsc_--strict-clean-2A6DB2?style=flat-square)
-![Cost](https://img.shields.io/badge/API_keys-0-1D9E75?style=flat-square)
 ![Hackathon](https://img.shields.io/badge/Code_Olympics-2026-EF9F27?style=flat-square)
 
-**[✨ Features](#-features) • [🧠 How It Works](#-how-it-works) • [🚀 Quick Start](#-quick-start) • [🎬 Usage](#-usage) • [🏗️ Architecture](#️-architecture) • [🏆 Rubric](#-how-it-scores)**
+**[Features](#-features) • [How It Works](#-how-it-works) • [Quick Start](#-quick-start) • [Usage](#-usage) • [Architecture](#️-architecture) • [Verification](#-verification)**
 
 </div>
 
 ---
 
-## 🎯 The one-sentence pitch
+## Overview
 
-> Most "no-library" entries quietly `import { cpus } from "node:os"`. **SENTINEL imports nothing at all** — it reads per-core CPU, system memory, the V8 heap limit and the live handle table straight out of the Node runtime via `process.report`, then forecasts failures with hand-rolled math. One file. No `node_modules`. No compiler.
+SENTINEL is a self-contained system-monitoring daemon that reads per-core CPU, system memory, the V8 heap limit, and the live handle table **directly from the Node.js runtime** via `process.report` — without importing a single library or core module. On top of those raw metrics it layers failure forecasting, adaptive anomaly detection, and a no-flap incident engine, then renders everything to a live terminal dashboard, a JSON stream, or a CI-ready exit code.
+
+The result is a genuinely useful operations tool delivered as **one file, with no `node_modules` and no compiler** — proof that a real system utility can be built with nothing but the language and the runtime.
 
 ---
 
-## 🚨 The constraint, taken to the extreme
+## The constraint, applied rigorously
 
-The challenge says **"No-Import Rookie — only built-in functions, no libraries."** Here's how far most people take it vs. how far SENTINEL takes it:
+The challenge specifies **"No-Import Rookie — only built-in functions, no libraries."** SENTINEL adopts the strictest possible interpretation:
 
-| | 😐 Typical reading | ✅ SENTINEL |
+| | Common interpretation | SENTINEL |
 |---|---|---|
 | npm packages | none | none |
 | Node core modules (`node:os`, `node:fs`) | freely imported | **never imported** |
 | `import` / `require` statements | a handful | **exactly 0** |
-| Type packages (`@types/node`) | installed | **hand-authored ambient types instead** |
+| Type packages (`@types/node`) | installed | **hand-authored ambient types** |
 | Build / compile step | `tsc` → `.js` | **none — Node strips types in memory** |
-| How it gets system metrics | OS module | **`process.report` runtime surface** |
+| System-metrics source | OS module | **`process.report` runtime surface** |
 
-The result satisfies *any* reading of "no libraries" — and turns the constraint into the most interesting part of the project.
+This satisfies every reading of "no libraries" — and turns the constraint into the defining feature of the project.
 
 ---
 
 ## ✨ Features
 
-SENTINEL fuses **all four** System-Utilities domains — *monitor · health-checks · automation · cleaner* — into one cohesive pipeline, then adds three things that make it more than a pretty `htop`.
+SENTINEL unifies **all four** System-Utilities domains — *monitor · health-checks · automation · cleaner* — into a single cohesive pipeline, then adds the analytics that distinguish it from a conventional process monitor.
 
-### 📡 What it monitors *(all zero-import)*
+### What it monitors *(all zero-import)*
 
 | | Signal | Source |
 |:--:|---|---|
@@ -65,17 +66,17 @@ SENTINEL fuses **all four** System-Utilities domains — *monitor · health-chec
 | 🔵 | **System memory %** (used / total) | `process.report` → `resourceUsage` |
 | 🟣 | **V8 heap pressure** (used / limit) | `process.report` → `javascriptHeap` |
 | 🟠 | **Event-loop lag** | timer drift via `performance.now()` |
-| 🔴 | **Libuv handles + "zombies"** | `process.report` → `libuv` (active **and** unreferenced) |
+| 🔴 | **Libuv handles + zombies** | `process.report` → `libuv` (active **and** unreferenced) |
 | 🌐 | **HTTP endpoint health** | global `fetch` + `AbortController` timeout |
 
-### 🧠 What makes it smart *(pure math, no libraries)*
+### What makes it intelligent *(pure math, no libraries)*
 
-| | Capability | How |
+| | Capability | Approach |
 |:--:|---|---|
-| 🔮 | **Failure forecasting** | Least-squares regression over each metric's history → *"heap +6.2%/min → crit in ~4m10s."* |
-| ✶ | **Adaptive anomaly detection** | EWMA mean/variance (Welford) baseline flags any metric **> 3σ** — *no hand-set thresholds.* |
-| ♻️ | **No-flap incident engine** | Hysteresis + debounce FSM with an `OPEN → RESOLVED` lifecycle and duration (MTTR). Alerts never chatter. |
-| 🧹 | **Inward cleaner** | No `fs` allowed → it cleans its *own* footprint: GC under pressure, history-buffer trim, zombie-handle reporting. |
+| 🔮 | **Failure forecasting** | Least-squares regression over each metric's history projects time-to-threshold — *"heap +6.2%/min → critical in ~4m10s."* |
+| ✶ | **Adaptive anomaly detection** | An EWMA mean/variance (Welford) baseline flags any metric beyond **3σ** — no hand-set thresholds. |
+| ♻️ | **No-flap incident engine** | A hysteresis + debounce state machine with an `OPEN → RESOLVED` lifecycle and measured duration (MTTR). Alerts never chatter. |
+| 🧹 | **Self-managing cleaner** | Triggers garbage collection under heap pressure, trims its own history buffers, and reports leaked handles — a monitor accountable for its own footprint. |
 
 ---
 
@@ -88,62 +89,58 @@ flowchart LR
   H --> A["⚙️ AUTOMATION<br/>hysteresis FSM · forecast · anomaly"]
   A --> C["🧹 CLEANER<br/>gc · trim · zombies"]
   A --> O1["⌨️ TUI dashboard"]
-  A --> O2["📜 JSONL stream"]
+  A --> O2["📜 JSON stream"]
   A --> O3["✅ --once exit code"]
   C --> M
 ```
 
-1. **📡 Sample** — `process.report.getReport()` is read once per interval as an in-memory snapshot (no file written).
-2. **🩺 Check** — internal thresholds + optional HTTP probes produce a weighted **health score + A–F grade**.
-3. **⚙️ Automate** — each metric runs through a hysteresis/debounce state machine; breaches become tracked incidents; trends are forecast; outliers are flagged.
-4. **🧹 Clean** — the daemon trims its own history and (with `--expose-gc`) reclaims heap, then reports leaked handles.
-5. **🎨 Render** — the same data feeds the live TUI, a JSONL stream, or a one-shot CI report.
+1. **Sample** — `process.report.getReport()` is read once per interval as an in-memory snapshot (no file is written).
+2. **Check** — internal thresholds and optional HTTP probes produce a weighted **health score and A–F grade**.
+3. **Automate** — each metric passes through a hysteresis/debounce state machine; sustained breaches become tracked incidents; trends are forecast; outliers are flagged.
+4. **Clean** — the daemon trims its own history and (with `--expose-gc`) reclaims heap, then reports leaked handles.
+5. **Render** — the same data feeds the live TUI, a JSON stream, or a one-shot CI report.
 
-### 🆓 Why zero-import (it's a feature, not a stunt)
+### Why zero-import matters
 
-A self-contained, dependency-free utility is **reproducible** (no lockfile drift), **auditable** (every byte it runs is in one file), **instant** (no `npm install`, no build), and **portable** (runs on any Node 22+ host, Windows/Linux/macOS, identically). The `process.report` approach proves you can build a real system tool without reaching for a single library.
+A dependency-free utility is **reproducible** (no lockfile drift), **auditable** (every byte it runs lives in one file), **instant** (no install, no build), and **portable** (runs identically on any Node 22+ host across Windows, Linux, and macOS). The `process.report` approach demonstrates that a complete system tool can be built without a single external dependency.
 
 ---
 
 ## 🚀 Quick Start
 
-> **Prerequisites:** **Node.js 22+** only. No install, no `npm i`, no compiler, no `node_modules`.
+> **Prerequisites:** **Node.js 22+** only — no install, no `npm i`, no compiler, no `node_modules`. Verify your version with `node --version`.
 
-### 🪟 Windows (PowerShell)
+### Windows (PowerShell)
 
 ```powershell
-# Live dashboard
 node --no-warnings --experimental-strip-types sentinel.ts
-
-# Or run the guided demo (proof → tests → report → live TUI under CPU load)
-powershell -ExecutionPolicy Bypass -File .\demo.ps1
 ```
 
-### 🐧 macOS / Linux
+### macOS / Linux
 
 ```bash
 node --no-warnings --experimental-strip-types sentinel.ts
 ```
 
-That's the whole setup. The `--experimental-strip-types` flag tells Node to erase the TypeScript types in memory and run the file directly.
+The `--experimental-strip-types` flag instructs Node to erase the TypeScript annotations in memory and execute the file directly. That is the entire setup.
 
 ---
 
 ## 🎬 Usage
 
-| Command | What it does |
+All commands are prefixed with `node --no-warnings --experimental-strip-types`.
+
+| Command | Description |
 |---|---|
-| `… sentinel.ts` | ⌨️ **Live TUI** — colored dashboard, redraws each interval |
-| `… sentinel.ts --once` | ✅ **One-shot report** — exits `0`=ok `1`=warn `2`=crit (drop-in CI / cron gate) |
-| `… sentinel.ts --json` | 📜 **Headless daemon** — JSONL metrics + events for pipelines |
-| `… sentinel.ts --selftest` | 🧪 **Built-in tests** — 15 assertions, no test framework, exits `0` on pass |
-| `… sentinel.ts --check <url>` | 🌐 Add an HTTP(S) health target (repeatable) |
-| `… sentinel.ts --interval <ms>` | ⏱️ Sample interval (default 1000) |
-| `… sentinel.ts --help` | ❓ Full option list |
+| `sentinel.ts` | **Live TUI** — colored dashboard that redraws each interval |
+| `sentinel.ts --once` | **One-shot report** — exits `0`=ok, `1`=warn, `2`=crit (drop-in CI / cron gate) |
+| `sentinel.ts --json` | **Headless daemon** — JSON metrics + events for pipelines |
+| `sentinel.ts --selftest` | **Built-in tests** — 17 assertions, no test framework, exits `0` on pass |
+| `sentinel.ts --check <url>` | Add an HTTP(S) health target (repeatable) |
+| `sentinel.ts --interval <ms>` | Sample interval (default `1000`) |
+| `sentinel.ts --help` | Full option list |
 
-*(prefix every command with `node --no-warnings --experimental-strip-types`)*
-
-### 🌐 Live health-check (verified against the real internet)
+### Live health-check example
 
 ```text
 CHECKS
@@ -153,48 +150,48 @@ CHECKS
 HEALTH  C  72/100  CRIT     →  process exit code 2
 ```
 
-One failing endpoint drags the aggregate to **CRIT** and the process exits `2` — exactly what a CI pipeline needs.
+A single failing endpoint drives the aggregate status to **CRIT** and the process exits `2` — exactly the signal a CI pipeline requires.
 
 ---
 
 ## 🏗️ Architecture
 
-One file, ten clearly-sectioned subsystems. Logic lives in **pure functions**; all I/O is isolated; the type system *is* the architecture.
+One file, ten clearly delineated subsystems. Business logic is written as **pure functions**, all I/O is isolated, and the type system encodes the architecture.
 
 <details>
-<summary><b>📁 File layout (sections of <code>sentinel.ts</code>)</b></summary>
+<summary><b>File layout (sections of <code>sentinel.ts</code>)</b></summary>
 
 ```
 sentinel.ts  (605 lines)
-├─ 1  Ambient runtime types   hand-rolled `declare const process` (no @types/node)
+├─ 1  Ambient runtime types   hand-authored `declare const process` (no @types/node)
 ├─ 2  Domain types            branded units (Pct·Bytes·Ms), discriminated-union events
 ├─ 3  Utility layer           slope · EWMA(Welford) · ANSI · bars · sparkline · Ring buffer
 ├─ 4  MONITOR                 snapshot() — reads the process.report surface
 ├─ 5  HEALTH CHECKS           internal thresholds + fetch probes + weighted score
 ├─ 6  AUTOMATION              hysteresis/debounce FSM · forecasting · anomaly detection
-├─ 7  CLEANER (inward)        gc trigger · history trim · zombie-handle reporting
-├─ 8  RENDERER                TUI frame · one-shot report · JSONL line
+├─ 7  CLEANER                 gc trigger · history trim · zombie-handle reporting
+├─ 8  RENDERER                TUI frame · one-shot report · JSON line
 ├─ 9  MAIN                    CLI parsing · modes · SIGINT restore · exit codes
 └─ 10 SELFTEST                zero-import assertions on every pure function
 ```
 </details>
 
 <details>
-<summary><b>🧬 TypeScript discipline on display</b></summary>
+<summary><b>TypeScript discipline</b></summary>
 
-| Technique | Where |
+| Technique | Purpose |
 |---|---|
 | **Branded unit types** (`Pct`, `Bytes`, `Ms`) | prevent mixing a percentage with a byte count at compile time |
 | **Discriminated unions** (`SentinelEvent`) | exhaustively handled with a `never` guard |
 | **`as const` status unions** | `OK / WARN / CRIT` without `enum` (erasable-syntax-only) |
 | **Generics** (`Ring<T>`) | typed fixed-capacity history buffer |
 | **`--noUncheckedIndexedAccess`** | every array access is null-checked |
-| **Self-authored ambient types** | strict `tsc` passes with **no `@types/node` installed** |
+| **Self-authored ambient types** | strict `tsc` passes with no `@types/node` installed |
 
 </details>
 
 <details>
-<summary><b>🧰 "Tech stack"</b></summary>
+<summary><b>Technology</b></summary>
 
 | Layer | Choice |
 |---|---|
@@ -202,8 +199,8 @@ sentinel.ts  (605 lines)
 | Runtime | Node.js 22 native type-stripping |
 | Metrics source | `process.report`, `process.memoryUsage`, `performance` |
 | Networking | global `fetch` + `AbortController` |
-| **Dependencies** | **none** |
-| **Build tooling** | **none** |
+| Dependencies | none |
+| Build tooling | none |
 
 </details>
 
@@ -215,45 +212,42 @@ Mapped to the official judging rubric:
 
 | Weight | Criterion | How SENTINEL earns it |
 |:--:|---|---|
-| **30%** | Functionality & Reliability | Real metrics, 4 modes, CI exit codes, no-flap alerting, 15 passing self-tests, verified live HTTP checks |
-| **25%** | Constraint Mastery | Stricter than required — 0 imports, 0 deps, 0 build, self-authored types |
+| **30%** | Functionality & Reliability | Real metrics, four modes, CI exit codes, no-flap alerting, 17 passing self-tests, verified live HTTP checks |
+| **25%** | Constraint Mastery | Stricter than required — 0 imports, 0 dependencies, 0 build step, self-authored types |
 | **20%** | Language Adaptation | Branded types, discriminated unions, erasable-only strict TS — types as architecture |
-| **15%** | Code Quality | Pure functions, isolated I/O, one section per concern, well under budget |
-| **10%** | Innovation | `process.report` as a metrics surface · failure forecasting · anomaly detection · inward cleaner |
+| **15%** | Code Quality | Pure functions, isolated I/O, one section per concern, comfortably within budget |
+| **10%** | Innovation | `process.report` as a metrics surface · failure forecasting · anomaly detection · self-managing cleaner |
 
-### ✅ Constraints — verified
+---
 
-| Constraint | Target | Actual |
+## ✅ Verification
+
+Every constraint is independently verifiable in seconds.
+
+| Constraint | Target | Result |
 |---|---|:--:|
 | No-Import Rookie | no libraries | **0 import/require statements** |
 | Enterprise Creator | ≤ 650 lines | **605 lines** |
-| System Utilities | the 4 domains | **monitor · health · automation · cleaner** |
+| System Utilities | the four domains | **monitor · health · automation · cleaner** |
 | TypeScript | type discipline | **`tsc --strict --noEmit` → 0 errors** |
 
 ```text
-Reproduce →  node --no-warnings --experimental-strip-types sentinel.ts --selftest      # 15/15
-             npx -y typescript tsc --strict --noEmit --erasableSyntaxOnly sentinel.ts  # 0 errors
+# zero imports (no output = pass)
+Select-String -Path sentinel.ts -Pattern '^\s*(import|require)\b'
+
+# line count
+(Get-Content sentinel.ts).Count
+
+# built-in test suite  →  17 passed, 0 failed
+node --no-warnings --experimental-strip-types sentinel.ts --selftest
+
+# strict type-check  →  0 errors
+npx -y typescript tsc --strict --noEmit --erasableSyntaxOnly sentinel.ts
 ```
 
 ---
 
-## ⚠️ Honest limitations
-
-<details>
-<summary><b>We'd rather be precise than oversell</b></summary>
-
-- **`--expose-gc` needed for the GC cleaner.** Without it, the cleaner degrades gracefully to history-trim + zombie reporting (no crash, just one fewer action).
-- **Health checks are HTTP(S) only.** `fetch` doesn't speak `file://` — correct scope for "health checks," but not a port scanner.
-- **First frame shows 0% CPU.** Per-core utilization needs two samples to diff; it's accurate from the second tick on.
-- **`process.report` is the dependency-free trade-off.** It's a rich snapshot but a slightly heavier call than a raw syscall — mitigated by sampling once per interval and never retaining the object.
-
-</details>
-
----
-
 <div align="center">
-
----
 
 ### *A real system tool, built with nothing but the language and the runtime.* 🛰️
 
